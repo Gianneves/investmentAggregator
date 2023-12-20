@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,5 +29,13 @@ public class UserService {
         );
         var userSaved = repository.save(entity);
         return userSaved.getUserId();
+    }
+
+    public Optional<User> getUserById(String userId) {
+        return repository.findById(UUID.fromString(userId));
+    }
+
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 }

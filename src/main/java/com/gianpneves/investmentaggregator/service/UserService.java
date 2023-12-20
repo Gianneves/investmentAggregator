@@ -1,6 +1,7 @@
 package com.gianpneves.investmentaggregator.service;
 
 import com.gianpneves.investmentaggregator.controller.CreateUserDTO;
+import com.gianpneves.investmentaggregator.controller.UpdateUserDTO;
 import com.gianpneves.investmentaggregator.entity.User;
 import com.gianpneves.investmentaggregator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,25 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    public void updateUserById(String userId,
+                               UpdateUserDTO userDTO) {
+        var id = UUID.fromString(userId);
+        var userEntity = repository.findById(id);
+
+        if (userEntity.isPresent()) {
+            var user = userEntity.get();
+
+            if (userDTO.username() != null) {
+                user.setUsername(userDTO.username());
+            }
+
+            if (userDTO.password() != null) {
+                user.setUsername(userDTO.password());
+            }
+            repository.save(user);
+        }
     }
 
     public void deleteById(String userId) {

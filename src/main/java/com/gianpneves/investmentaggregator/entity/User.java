@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -34,6 +35,9 @@ public class User {
     private Instant creationTimestamp;
     @UpdateTimestamp
     private Instant updateTimestamp;
+
+    @OneToMany(mappedBy = "user")
+    private List<Account> accounts;
 
     public User(UUID uuid, String username, String email, String password) {
     }

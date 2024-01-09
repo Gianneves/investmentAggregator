@@ -1,6 +1,7 @@
 package com.gianpneves.investmentaggregator.service;
 
 import com.gianpneves.investmentaggregator.controller.CreateUserDTO;
+import com.gianpneves.investmentaggregator.controller.UpdateUserDTO;
 import com.gianpneves.investmentaggregator.entity.User;
 import com.gianpneves.investmentaggregator.repository.UserRepository;
 import jakarta.persistence.Id;
@@ -170,6 +171,95 @@ class UserServiceTest {
             assertEquals(userId, idList.get(0));
             assertEquals(userId, idList.get(1));
 
+            verify(userRepository, times(1)).existsById(idList.get(0));
+            verify(userRepository, times(1)).existsById(idList.get(1));
+        }
+
+        @Test
+        @DisplayName("should not delete with success when user not exists ")
+        void shouldNotDeleteWithSuccessWhenUserNotExists() {
+            // Arrange
+            doReturn(false)
+                    .when(userRepository)
+                    .existsById(uuidArgumentCaptor.capture());
+
+            var userId = UUID.randomUUID();
+            // Act
+            userService.deleteById(userId.toString());
+
+            // Assert
+            assertEquals(userId, uuidArgumentCaptor.getValue());
+
+            verify(userRepository, times(1)).existsById(uuidArgumentCaptor.getValue());
+            verify(userRepository, times(0)).deleteById(any());
+        }
+    }
+
+    @Nested
+    class updateUserById {
+        @Test
+        @DisplayName("Should update user by id when user exists and username and password is filled")
+        void shouldUpdateUserByIdWhenUserExistsAndUsernameAndPasswordIsFilled() {
+
+            // Arrange
+            var updateUserDTO = new UpdateUserDTO("newUsername", "newPassword");
+            var user = new User (
+                    UUID.randomUUID(),
+                    "username",
+                    "email@email.com",
+                    "password",
+                    Instant.now(),
+                    null
+            );
+            doReturn(Optional.of(user))
+                    .when(userRepository)
+                    .findById(uuidArgumentCaptor.capture());
+
+            doReturn(user)
+                    .when(userRepository)
+                    .save(userArgumentCaptor.capture());
+
+            // Act
+            userService.updateUserById(user.getUserId().toString(), updateUserDTO);
+
+            // Assert
+            assertEquals(user.getUserId(), uuidArgumentCaptor.getValue());
+
+            var userCaptured = userArgumentCaptor.getValue();
+
+            assertEquals(updateUserDTO.username(), userCaptured.getUsername());
+            assertEquals(updateUserDTO.password(), userCaptured.getPassword());
+
+            verify(userRepository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+
+            verify(userRepository, times(1))
+                    .save(user);
+        }
+
+        @Test
+        @DisplayName("Should not update user by id when user not exists")
+        void shouldNotUpdateUserByIdWhenUserNotExists() {
+
+            // Arrange
+            var updateUserDTO = new UpdateUserDTO("newUsername", "newPassword");
+            var userId = UUID.randomUUID();
+            doReturn(Optional.empty())
+                    .when(userRepository)
+                    .findById(uuidArgumentCaptor.capture());
+
+            // Act
+            userService.updateUserById(userId.toString(), updateUserDTO);
+
+            // Assert
+            assertEquals(userId, uuidArgumentCaptor.getValue());
+
+            verify(userRepository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+
+            verify(userRepository, times(0))
+                    .save(any());
         }
     }
 }
+ 

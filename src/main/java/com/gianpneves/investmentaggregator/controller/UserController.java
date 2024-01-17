@@ -1,5 +1,8 @@
 package com.gianpneves.investmentaggregator.controller;
 
+import com.gianpneves.investmentaggregator.controller.dtos.CreateAccountDTO;
+import com.gianpneves.investmentaggregator.controller.dtos.CreateUserDTO;
+import com.gianpneves.investmentaggregator.controller.dtos.UpdateUserDTO;
 import com.gianpneves.investmentaggregator.entity.User;
 import com.gianpneves.investmentaggregator.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +48,12 @@ public class UserController {
     public ResponseEntity<Void> deleteById(@PathVariable("userId") String userId) {
         service.deleteById(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{userId}/accounts")
+    public ResponseEntity<Void> createAccount(@PathVariable("userId") String userId,
+                                              @RequestBody CreateAccountDTO createAccountDTO) {
+        service.createAccount(userId, createAccountDTO);
+        return ResponseEntity.ok().build();
     }
 }

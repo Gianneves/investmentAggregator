@@ -39,6 +39,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Account> accounts;
 
+
+
     public User(UUID uuid, String username, String email, String password) {
+
+    }
+
+    public User(UUID uuid, String username, String mail, String password, Instant now, Object o) {
     }
 }

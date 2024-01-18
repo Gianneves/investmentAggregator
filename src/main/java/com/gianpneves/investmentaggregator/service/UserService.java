@@ -1,5 +1,6 @@
 package com.gianpneves.investmentaggregator.service;
 
+import com.gianpneves.investmentaggregator.controller.dtos.AccountResponseDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.CreateAccountDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.CreateUserDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.UpdateUserDTO;
@@ -100,5 +101,15 @@ public class UserService {
          );
 
          billingAddressRepository.save(billingAddress);
+    }
+
+    public List<AccountResponseDTO> listAccounts(String userId) {
+        var user = repository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return user.getAccounts()
+                .stream()
+                .map(acc -> new AccountResponseDTO(acc.getAccountId().toString(), acc.getDescription()))
+                .toList();
     }
 }

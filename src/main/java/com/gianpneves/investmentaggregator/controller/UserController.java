@@ -1,5 +1,6 @@
 package com.gianpneves.investmentaggregator.controller;
 
+import com.gianpneves.investmentaggregator.controller.dtos.AccountResponseDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.CreateAccountDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.CreateUserDTO;
 import com.gianpneves.investmentaggregator.controller.dtos.UpdateUserDTO;
@@ -55,5 +56,11 @@ public class UserController {
                                               @RequestBody CreateAccountDTO createAccountDTO) {
         service.createAccount(userId, createAccountDTO);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/accounts")
+    public ResponseEntity<List<AccountResponseDTO>> ListAccounts(@PathVariable("userId") String userId) {
+        var accounts = service.listAccounts(userId);
+        return ResponseEntity.ok(accounts);
     }
 }

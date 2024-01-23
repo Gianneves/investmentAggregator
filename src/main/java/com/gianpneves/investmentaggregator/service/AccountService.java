@@ -1,6 +1,8 @@
 package com.gianpneves.investmentaggregator.service;
 
+
 import com.gianpneves.investmentaggregator.controller.dtos.AccountStockDTO;
+import com.gianpneves.investmentaggregator.controller.dtos.AccountStockResponseDTO;
 import com.gianpneves.investmentaggregator.entity.AccountStock;
 import com.gianpneves.investmentaggregator.entity.AccountStockId;
 import com.gianpneves.investmentaggregator.repository.AccountRepository;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,5 +42,14 @@ public class AccountService {
         var accountStockEntity = new AccountStock(id, account, stock, accountStockDto.quantity());
 
         accountStockRepository.save(accountStockEntity);
+    }
+
+    public List<AccountStockResponseDTO> listStocks(String accountId) {
+        var account = accountRepository.findById(UUID.fromString(accountId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not exists"));
+
+        return account.getAccountStocks()
+                .stream().map(as -> new AccountStockResponseDTO(as.getStock().getStockId(), as.getQuantity(), 0.0))
+                .toList();
     }
 }
